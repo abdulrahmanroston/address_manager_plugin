@@ -1,0 +1,26 @@
+{
+  "name": "Simple Checkout Location Selector",
+  "version": "3.1.1",
+  "download_url": "https://github.com/abdulrahmanroston/address_manager_plugin/archive/refs/heads/main.zip",
+  "homepage": "https://github.com/abdulrahmanroston/address_manager_plugin",
+  "requires": "5.0",
+  "tested": "6.4",
+  "requires_php": "7.4",
+  "last_updated": "2024-12-26 09:50:00",
+  "author": "Abdulrahman Roston",
+  "author_homepage": "https://github.com/abdulrahmanroston",
+  "sections": {
+    "description": "Professional address management system with interactive Google Maps location selection, multi-zone shipping, and delivery scheduling for WooCommerce.",
+    "installation": "1. Upload the plugin folder to /wp-content/plugins/\n2. Activate through WordPress Plugins menu\n3. Configure Google Maps API key\n4. Set up delivery zones in WooCommerce settings",
+    "changelog": "<h4>3.1.1</h4><ul><li>Added delivery scheduling system per zone</li><li>Implemented zone-based delivery times configuration</li><li>Fixed location saving in guest checkout</li><li>Enhanced REST API with delivery schedule endpoints</li><li>Improved order admin display with schedule information</li><li>Added automatic shipping recalculation on zone change</li></ul><h4>3.0.6</h4><ul><li>Complete REST API implementation</li><li>Order creation via API support</li><li>Enhanced admin order display</li><li>Auto-sync addresses to orders</li><li>Guest checkout improvements</li></ul><h4>2.5.0</h4><ul><li>Multi-zone shipping system</li><li>Dynamic shipping cost calculation</li><li>Admin zones management page</li><li>Arabic language support for zones</li></ul>",
+    "faq": "<h4>Does it work with guest checkout?</h4><p>Yes, fully supports guest checkout with all features.</p><h4>Can I use custom Google Maps API key?</h4><p>Yes, you can configure your own API key in the plugin file.</p><h4>Does it sync addresses automatically?</h4><p>Yes, when users update saved addresses, pending/processing orders are updated automatically.</p>"
+  },
+  "banners": {
+    "low": "https://raw.githubusercontent.com/abdulrahmanroston/address_manager_plugin/main/assets/banner-772x250.png",
+    "high": "https://raw.githubusercontent.com/abdulrahmanroston/address_manager_plugin/main/assets/banner-1544x500.png"
+  },
+  "icons": {
+    "1x": "https://raw.githubusercontent.com/abdulrahmanroston/address_manager_plugin/main/assets/icon-128x128.png",
+    "2x": "https://raw.githubusercontent.com/abdulrahmanroston/address_manager_plugin/main/assets/icon-256x256.png"
+  }
+}
