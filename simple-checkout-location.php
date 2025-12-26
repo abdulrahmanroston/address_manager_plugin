@@ -4,7 +4,13 @@
  * Description: Professional address management with location selection for WooCommerce
  * Version: 3.1.1
  * Author: Abdulrahman Roston
+ * Author URI: https://github.com/abdulrahmanroston
+ * Plugin URI: https://github.com/abdulrahmanroston/address_manager_plugin
+ * Requires PHP: 7.4
+ * Requires at least: 5.8
  * Text Domain: simple-checkout-location
+ * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -17,20 +23,31 @@ define( 'SCL_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 // ==================== Plugin Update Checker ====================
 
-require_once SCL_PLUGIN_DIR . 'includes/plugin-update-checker-master/plugin-update-checker.php';
-
-use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
-
-$updateChecker = PucFactory::buildUpdateChecker(
-    'https://raw.githubusercontent.com/abdulrahmanroston/address_manager_plugin/main/updates.json',
-    __FILE__,
-    'simple-checkout-location'
-);
+/**
+ * Setup automatic updates from GitHub Releases
+ */
+if ( file_exists( SCL_PLUGIN_DIR . 'includes/plugin-update-checker-master/plugin-update-checker.php' ) ) {
+    require SCL_PLUGIN_DIR . 'includes/plugin-update-checker-master/plugin-update-checker.php';
+    
+    use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+    
+    $sclUpdateChecker = PucFactory::buildUpdateChecker(
+        'https://github.com/abdulrahmanroston/address_manager_plugin/',
+        __FILE__,
+        'simple-checkout-location'
+    );
+    
+    // Set the branch that contains stable releases
+    $sclUpdateChecker->setBranch( 'main' );
+    
+    // Enable release assets for proper ZIP downloads
+    $sclUpdateChecker->getVcsApi()->enableReleaseAssets();
+}
 
 // ==================== Include Required Files ====================
 
 require_once SCL_PLUGIN_DIR . 'includes/class-address-repository.php';
-require_once SCL_PLUGIN_DIR . 'includes/class-zones-repository.php';  // ✅ قبل كل شيء
+require_once SCL_PLUGIN_DIR . 'includes/class-zones-repository.php';
 require_once SCL_PLUGIN_DIR . 'includes/class-address-manager.php';
 require_once SCL_PLUGIN_DIR . 'includes/class-address-service.php';
 require_once SCL_PLUGIN_DIR . 'includes/class-address-rest-controller.php';
