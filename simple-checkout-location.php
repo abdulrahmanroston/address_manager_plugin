@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Simple Checkout Location Selector
  * Description: Professional address management with location selection for WooCommerce
- * Version: 3.0.6
+ * Version: 3.1.1
  * Author: Abdulrahman Roston
  * Text Domain: simple-checkout-location
  */
@@ -15,7 +15,20 @@ define( 'SCL_VERSION', '3.1.1' );
 define( 'SCL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SCL_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-// Include required files
+// ==================== Plugin Update Checker ====================
+
+require_once SCL_PLUGIN_DIR . 'includes/plugin-update-checker-master/plugin-update-checker.php';
+
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+$updateChecker = PucFactory::buildUpdateChecker(
+    'https://raw.githubusercontent.com/abdulrahmanroston/address_manager_plugin/main/updates.json',
+    __FILE__,
+    'simple-checkout-location'
+);
+
+// ==================== Include Required Files ====================
+
 require_once SCL_PLUGIN_DIR . 'includes/class-address-repository.php';
 require_once SCL_PLUGIN_DIR . 'includes/class-zones-repository.php';  // ✅ قبل كل شيء
 require_once SCL_PLUGIN_DIR . 'includes/class-address-manager.php';
