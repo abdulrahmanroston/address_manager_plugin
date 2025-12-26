@@ -1,0 +1,586 @@
+/* ===============================================
+   Admin Page Styles for Address Management
+   =============================================== */
+
+.scl-admin-wrap {
+    background: #fff;
+    padding: 20px;
+    margin: 20px 20px 0 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Filters Section */
+.scl-filters {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.scl-search-input {
+    flex: 1;
+    max-width: 400px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.scl-filter-select {
+    min-width: 200px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Loading State */
+.scl-loading {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 15px;
+}
+
+.scl-loading:before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #2271b1;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* No Results */
+.scl-no-results {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-size: 15px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+/* Modal Styles */
+.scl-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.scl-modal-content {
+    background: #fff;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    border-radius: 8px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+}
+
+.scl-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f8f9fa;
+}
+
+.scl-modal-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+}
+
+.scl-modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #999;
+    line-height: 1;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.scl-modal-close:hover {
+    background: #e0e0e0;
+    color: #333;
+}
+
+.scl-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+}
+
+.scl-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e0e0e0;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Form Styles */
+.scl-form-row {
+    margin-bottom: 20px;
+}
+
+.scl-form-row label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.scl-form-row input[type="text"],
+.scl-form-row input[type="email"],
+.scl-form-row input[type="url"],
+.scl-form-row input[type="number"],
+.scl-form-row select,
+.scl-form-row textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.scl-form-row input:focus,
+.scl-form-row select:focus,
+.scl-form-row textarea:focus {
+    outline: none;
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+.scl-form-row textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.scl-form-row .required {
+    color: #d63638;
+}
+
+/* Two Column Form Row */
+.scl-form-row-half {
+    display: flex;
+    gap: 15px;
+}
+
+.scl-form-row-half .scl-form-col {
+    flex: 1;
+}
+
+.scl-form-row-half .scl-form-col label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.scl-form-row-half input {
+    width: 100%;
+}
+
+/* Badges */
+.scl-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.scl-badge-core {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.scl-badge-custom {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.scl-default-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #ffc107;
+    color: #000;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+/* Notice */
+.scl-notice {
+    padding: 15px;
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    margin: 20px 0;
+    border-radius: 4px;
+}
+
+.scl-notice p {
+    margin: 0;
+    color: #856404;
+}
+
+/* Custom Fields Page */
+.scl-delete-field {
+    color: #d63638;
+}
+
+.scl-delete-field:hover {
+    color: #d63638;
+    border-color: #d63638;
+}
+
+/* My Account Addresses Section */
+.scl-myaccount-addresses {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.scl-address-card {
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.scl-address-card:hover {
+    border-color: #2271b1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.scl-address-card h4 {
+    margin: 0 0 15px 0;
+    color: #2271b1;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.scl-address-card p {
+    margin: 8px 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
+}
+
+.scl-address-card p strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.scl-address-card a {
+    color: #2271b1;
+    text-decoration: none;
+}
+
+.scl-address-card a:hover {
+    text-decoration: underline;
+}
+
+/* Address Manager in Checkout */
+.scl-address-manager {
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.scl-address-manager h3 {
+    margin: 0 0 15px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.scl-address-list {
+    margin-bottom: 15px;
+}
+
+.scl-address-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 15px;
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.scl-address-item:hover {
+    border-color: #2271b1;
+}
+
+.scl-address-item input[type="radio"] {
+    margin-top: 3px;
+    cursor: pointer;
+}
+
+.scl-address-item input[type="radio"]:checked + .scl-address-name {
+    color: #2271b1;
+    font-weight: 700;
+}
+
+.scl-address-name {
+    font-weight: 600;
+    color: #333;
+    font-size: 15px;
+    min-width: 150px;
+}
+
+.scl-address-details {
+    flex: 1;
+    color: #666;
+    font-size: 14px;
+}
+
+.scl-address-phone {
+    color: #888;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+#scl-new-address-form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 6px;
+    margin-top: 15px;
+    border: 2px solid #e0e0e0;
+}
+
+#scl-new-address-form p {
+    margin-bottom: 15px;
+}
+
+#scl-new-address-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+#scl-new-address-form input[type="text"],
+#scl-new-address-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+#scl-new-address-form textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+#scl-new-address-form .required {
+    color: #d63638;
+}
+
+#scl-add-new-address {
+    background: #2271b1;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+#scl-add-new-address:hover {
+    background: #135e96;
+}
+
+#scl-open-location-modal,
+#scl-save-address {
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+/* Notifications */
+.location-notification {
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    background: #d1ecf1;
+    border-left: 4px solid #0c5460;
+    color: #0c5460;
+    font-size: 14px;
+}
+
+.location-notification.error {
+    background: #f8d7da;
+    border-left-color: #721c24;
+    color: #721c24;
+}
+
+.location-notification.info {
+    background: #d1ecf1;
+    border-left-color: #0c5460;
+    color: #0c5460;
+}
+
+.address-change-notice {
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    color: #856404;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .scl-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .scl-search-input,
+    .scl-filter-select {
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .scl-modal {
+        padding: 10px;
+    }
+
+    .scl-modal-content {
+        max-height: 95vh;
+    }
+
+    .scl-form-row-half {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .scl-myaccount-addresses {
+        grid-template-columns: 1fr;
+    }
+
+    .scl-address-item {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .scl-address-name {
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .scl-admin-wrap {
+        margin: 10px 10px 0 0;
+        padding: 15px;
+    }
+
+    .scl-modal-header,
+    .scl-modal-body,
+    .scl-modal-footer {
+        padding: 15px;
+    }
+
+    .scl-address-manager {
+        padding: 15px;
+    }
+
+    #scl-new-address-form {
+        padding: 15px;
+    }
+}
+
+/* Table Responsive */
+@media (max-width: 782px) {
+    .wp-list-table {
+        font-size: 13px;
+    }
+
+    .wp-list-table th,
+    .wp-list-table td {
+        padding: 8px;
+    }
+
+    .button-small {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .scl-modal,
+    .scl-filters,
+    .page-title-action,
+    .button {
+        display: none !important;
+    }
+}
