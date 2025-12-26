@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Simple Checkout Location Selector
  * Description: Professional address management with location selection for WooCommerce
- * Version: 3.1.1
+ * Version: 3.1.2
  * Author: Abdulrahman Roston
  * Author URI: https://github.com/abdulrahmanroston
  * Plugin URI: https://github.com/abdulrahmanroston/address_manager_plugin
@@ -17,14 +17,14 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'SCL_VERSION', '3.1.1' );
+define( 'SCL_VERSION', '3.1.2' );
 define( 'SCL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SCL_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 // ==================== Plugin Update Checker ====================
 
 /**
- * Setup automatic updates from GitHub Releases
+ * Setup automatic updates from GitHub commits
  */
 if ( file_exists( SCL_PLUGIN_DIR . 'includes/plugin-update-checker-master/plugin-update-checker.php' ) ) {
     require SCL_PLUGIN_DIR . 'includes/plugin-update-checker-master/plugin-update-checker.php';
@@ -37,11 +37,8 @@ if ( file_exists( SCL_PLUGIN_DIR . 'includes/plugin-update-checker-master/plugin
         'simple-checkout-location'
     );
     
-    // Set the branch that contains stable releases
+    // Monitor the main branch for updates directly from commits
     $sclUpdateChecker->setBranch( 'main' );
-    
-    // Enable release assets for proper ZIP downloads
-    $sclUpdateChecker->getVcsApi()->enableReleaseAssets();
 }
 
 // ==================== Include Required Files ====================
