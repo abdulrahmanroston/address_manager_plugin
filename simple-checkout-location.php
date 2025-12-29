@@ -221,6 +221,7 @@ class Simple_Checkout_Location {
         add_action( 'woocommerce_after_checkout_validation', [ $this, 'remove_woocommerce_errors' ], 10, 2 );
         
         add_action( 'woocommerce_checkout_update_order_meta', [ $this, 'save_custom_address_to_order' ], 10, 2 );
+        add_action( 'woocommerce_checkout_create_order', [ $this, 'backup_save_delivery_schedule' ], 20, 2 );
         
         // ✅ Hook للتعامل مع الطلبات من REST API
         add_action( 'woocommerce_new_order', [ $this, 'save_location_from_api_order' ], 10, 2 );
@@ -248,6 +249,7 @@ class Simple_Checkout_Location {
         add_action( 'wp_ajax_scl_delete_address', [ $this, 'ajax_delete_address' ] );
         add_action( 'wp_ajax_scl_get_delivery_schedule', [ $this, 'ajax_get_delivery_schedule' ] );
         add_action( 'wp_ajax_nopriv_scl_get_delivery_schedule', [ $this, 'ajax_get_delivery_schedule' ] );
+
     }
 
 
@@ -922,69 +924,107 @@ public function populate_woocommerce_fields( $data ) {
 
 
     public function save_custom_address_to_order( $order_id, $data ) {
-    $order = wc_get_order( $order_id );
+    error_log('SCL: save_custom_address_to_order called for order #' . $order_id);
+    error_log('SCL: POST data: ' . print_r($_POST, true)); // ✅ Debug
     
-    if ( is_user_logged_in() && isset( $_POST['scl_address_id'] ) ) {
-        $address_id = (int) $_POST['scl_address_id'];
-        $address = $this->repo->get_address( $address_id, get_current_user_id() );
-        
-        if ( $address ) {
-            $order->update_meta_data( '_scl_address_id', $address_id );
-            
-            $billing = [
-                'first_name'   => $address['customer_name'],
-                'last_name'    => '',
-                'company'      => $address['address_name'],
-                'address_1'    => $address['address_details'],
-                'address_2'    => $address['notes_customer'],
-                'city'         => $address['zone'],
-                'state'        => '',
-                'postcode'     => '',
-                'country'      => 'EG',
-                'email'        => $order->get_billing_email(),
-                'phone'        => $address['phone_primary'],
-            ];
-            
-            $order->set_address( $billing, 'billing' );
-            
-            $order->update_meta_data( '_billing_phone_secondary', $address['phone_secondary'] );
-            $order->update_meta_data( '_billing_address_name', $address['address_name'] );
-            $order->update_meta_data( '_billing_location_url', $address['location_url'] );
-            $order->update_meta_data( '_billing_location_lat', $address['location_lat'] );
-            $order->update_meta_data( '_billing_location_lng', $address['location_lng'] );
-            $order->update_meta_data( '_billing_notes_internal', $address['notes_internal'] );
-            $order->update_meta_data( '_billing_zone', $address['zone'] );
-        }
-    } else {
-        // ✅ Guest checkout من الموقع (ليس API)
-        if ( isset( $_POST['scl_location_url'] ) && ! empty( $_POST['scl_location_url'] ) ) {
-            $order->update_meta_data( '_billing_location_url', sanitize_text_field( $_POST['scl_location_url'] ) );
-        }
-        if ( isset( $_POST['scl_location_lat'] ) && ! empty( $_POST['scl_location_lat'] ) ) {
-            $order->update_meta_data( '_billing_location_lat', sanitize_text_field( $_POST['scl_location_lat'] ) );
-        }
-        if ( isset( $_POST['scl_location_lng'] ) && ! empty( $_POST['scl_location_lng'] ) ) {
-            $order->update_meta_data( '_billing_location_lng', sanitize_text_field( $_POST['scl_location_lng'] ) );
-        }
-        
-        // ✅ حفظ zone و notes من guest
-        if ( isset( $_POST['scl_guest_city'] ) && ! empty( $_POST['scl_guest_city'] ) ) {
-            $order->update_meta_data( '_billing_zone', sanitize_text_field( $_POST['scl_guest_city'] ) );
-        }
+    $order = wc_get_order( $order_id );
+    if ( ! $order ) {
+        error_log('SCL: Order not found #' . $order_id);
+        return;
     }
-
+    
+    
+    $delivery_date = '';
+    $delivery_time = '';
+    
+    // Try from POST first
     if ( isset( $_POST['delivery_date'] ) && ! empty( $_POST['delivery_date'] ) ) {
-        $order->update_meta_data( '_scl_delivery_date', sanitize_text_field( $_POST['delivery_date'] ) );
-        $order->update_meta_data( '_billing_delivery_date', sanitize_text_field( $_POST['delivery_date'] ) );
+        $delivery_date = sanitize_text_field( $_POST['delivery_date'] );
+        error_log('SCL: Found delivery_date in $_POST[delivery_date]: ' . $delivery_date);
+    } elseif ( isset( $_POST['billing_delivery_date'] ) && ! empty( $_POST['billing_delivery_date'] ) ) {
+        $delivery_date = sanitize_text_field( $_POST['billing_delivery_date'] );
+        error_log('SCL: Found delivery_date in $_POST[billing_delivery_date]: ' . $delivery_date);
+    } elseif ( isset( $data['billing_delivery_date'] ) && ! empty( $data['billing_delivery_date'] ) ) {
+        $delivery_date = sanitize_text_field( $data['billing_delivery_date'] );
+        error_log('SCL: Found delivery_date in $data: ' . $delivery_date);
     }
-
+    
     if ( isset( $_POST['delivery_time'] ) && ! empty( $_POST['delivery_time'] ) ) {
-        $order->update_meta_data( '_scl_delivery_time', sanitize_text_field( $_POST['delivery_time'] ) );
-        $order->update_meta_data( '_billing_delivery_time', sanitize_text_field( $_POST['delivery_time'] ) );
+        $delivery_time = sanitize_text_field( $_POST['delivery_time'] );
+        error_log('SCL: Found delivery_time in $_POST[delivery_time]: ' . $delivery_time);
+    } elseif ( isset( $_POST['billing_delivery_time'] ) && ! empty( $_POST['billing_delivery_time'] ) ) {
+        $delivery_time = sanitize_text_field( $_POST['billing_delivery_time'] );
+        error_log('SCL: Found delivery_time in $_POST[billing_delivery_time]: ' . $delivery_time);
+    } elseif ( isset( $data['billing_delivery_time'] ) && ! empty( $data['billing_delivery_time'] ) ) {
+        $delivery_time = sanitize_text_field( $data['billing_delivery_time'] );
+        error_log('SCL: Found delivery_time in $data: ' . $delivery_time);
     }
+    
 
+    error_log('SCL: Final Delivery Date: ' . ($delivery_date ?: 'EMPTY'));
+    error_log('SCL: Final Delivery Time: ' . ($delivery_time ?: 'EMPTY'));
+    
+    
+    if ( ! empty( $delivery_date ) ) {
+        $order->update_meta_data( '_billing_delivery_date', $delivery_date );
+        error_log('SCL: ✅ Saved _billing_delivery_date: ' . $delivery_date);
+    } else {
+        error_log('SCL: ⚠️ WARNING - delivery_date is empty!');
+    }
+    
+    if ( ! empty( $delivery_time ) ) {
+        $order->update_meta_data( '_billing_delivery_time', $delivery_time );
+        error_log('SCL: ✅ Saved _billing_delivery_time: ' . $delivery_time);
+    } else {
+        error_log('SCL: ⚠️ WARNING - delivery_time is empty!');
+    }
+    
+    
+    if ( is_user_logged_in() ) {
+        $address_id = isset( $_POST['scl_address_id'] ) ? (int) $_POST['scl_address_id'] : 0;
+        
+        if ( $address_id > 0 ) {
+            $order->update_meta_data( '_scl_address_id', $address_id );
+        }
+    }
+    
+    // Location fields
+    if ( isset( $_POST['scl_location_url'] ) && ! empty( $_POST['scl_location_url'] ) ) {
+        $order->update_meta_data( '_billing_location_url', sanitize_text_field( $_POST['scl_location_url'] ) );
+    }
+    
+    if ( isset( $_POST['scl_location_lat'] ) && ! empty( $_POST['scl_location_lat'] ) ) {
+        $order->update_meta_data( '_billing_location_lat', sanitize_text_field( $_POST['scl_location_lat'] ) );
+    }
+    
+    if ( isset( $_POST['scl_location_lng'] ) && ! empty( $_POST['scl_location_lng'] ) ) {
+        $order->update_meta_data( '_billing_location_lng', sanitize_text_field( $_POST['scl_location_lng'] ) );
+    }
+    
+    // Zone
+    if ( isset( $_POST['billing_city'] ) && ! empty( $_POST['billing_city'] ) ) {
+        $order->update_meta_data( '_billing_zone', sanitize_text_field( $_POST['billing_city'] ) );
+    }
+    
+    // Customer notes
+    if ( isset( $_POST['billing_notes_customer'] ) && ! empty( $_POST['billing_notes_customer'] ) ) {
+        $order->update_meta_data( '_billing_notes_customer', sanitize_textarea_field( $_POST['billing_notes_customer'] ) );
+    }
+    
+    // Phone secondary
+    if ( isset( $_POST['scl_phone_secondary'] ) && ! empty( $_POST['scl_phone_secondary'] ) ) {
+        $order->update_meta_data( '_billing_phone_secondary', sanitize_text_field( $_POST['scl_phone_secondary'] ) );
+    }
+    
+    // Address name
+    if ( isset( $_POST['billing_company'] ) && ! empty( $_POST['billing_company'] ) ) {
+        $order->update_meta_data( '_billing_address_name', sanitize_text_field( $_POST['billing_company'] ) );
+    }
+    
     $order->save();
+    error_log('SCL: Order #' . $order_id . ' saved successfully ✅');
 }
+
 
 
     
@@ -1509,6 +1549,37 @@ public function save_location_from_api_order( $order_id, $order ) {
         error_log( 'SCL: Order meta saved successfully' );
     }
 }
+
+
+  public function backup_save_delivery_schedule( $order, $data ) {
+        error_log('SCL: backup_save_delivery_schedule triggered for order #' . $order->get_id());
+        
+        // Read from POST
+        $delivery_date = '';
+        $delivery_time = '';
+        
+        if ( isset( $_POST['delivery_date'] ) && ! empty( $_POST['delivery_date'] ) ) {
+            $delivery_date = sanitize_text_field( $_POST['delivery_date'] );
+        } elseif ( isset( $_POST['billing_delivery_date'] ) && ! empty( $_POST['billing_delivery_date'] ) ) {
+            $delivery_date = sanitize_text_field( $_POST['billing_delivery_date'] );
+        }
+        
+        if ( isset( $_POST['delivery_time'] ) && ! empty( $_POST['delivery_time'] ) ) {
+            $delivery_time = sanitize_text_field( $_POST['delivery_time'] );
+        } elseif ( isset( $_POST['billing_delivery_time'] ) && ! empty( $_POST['billing_delivery_time'] ) ) {
+            $delivery_time = sanitize_text_field( $_POST['billing_delivery_time'] );
+        }
+        
+        error_log('SCL: Backup hook - Date: ' . ($delivery_date ?: 'EMPTY') . ' | Time: ' . ($delivery_time ?: 'EMPTY'));
+        
+        if ( ! empty( $delivery_date ) ) {
+            $order->update_meta_data( '_billing_delivery_date', $delivery_date );
+        }
+        
+        if ( ! empty( $delivery_time ) ) {
+            $order->update_meta_data( '_billing_delivery_time', $delivery_time );
+        }
+    }
 
 
 

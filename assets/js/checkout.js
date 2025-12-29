@@ -22,19 +22,38 @@
             }
         }
         
-        // ✅ للضيوف: ملء الحقول والمواعيد
-        if (!sclData.isLoggedIn) {
-            const guestCity = $('#scl_guest_city').val();
-            if (guestCity) {
-                loadDeliverySchedule(guestCity);
+            if (!sclData.isLoggedIn) {
+                const guestCity = $('#scl_guest_city').val();
+                if (guestCity) {
+                    loadDeliverySchedule(guestCity);
+                }
+            } else {
+                // ✅ للمستخدمين: تحميل المواعيد من المنطقة المحددة
+                const selectedZone = $('#scl_zone').val();
+                if (selectedZone) {
+                    loadDeliverySchedule(selectedZone);
+                }
             }
-        } else {
-            // ✅ للمستخدمين: تحميل المواعيد من المنطقة المحددة
-            const selectedZone = $('#scl_zone').val();
-            if (selectedZone) {
-                loadDeliverySchedule(selectedZone);
-            }
+
+            if (!$('input[name="delivery_date"]').length) {
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'delivery_date',
+                id: 'hidden_delivery_date'
+            }).appendTo('form.checkout');
+            console.log('SCL: Created hidden field for delivery_date');
         }
+        
+        if (!$('input[name="delivery_time"]').length) {
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'delivery_time',
+                id: 'hidden_delivery_time'
+            }).appendTo('form.checkout');
+            console.log('SCL: Created hidden field for delivery_time');
+        }
+
+
     });
 
     function initAddressManager() {
@@ -859,6 +878,41 @@
     }
 
 
+// تحديث القيم عند تغيير التاريخ أو الوقت
+$(document).on('change', '#scl_delivery_date', function() {
+    const selectedDate = $(this).val();
+    $('input[name="delivery_date"]').val(selectedDate);
+    $('input[name="billing_delivery_date"]').val(selectedDate);
+    console.log('SCL: Delivery date updated ->', selectedDate);
+});
+
+$(document).on('change', '#scl_delivery_time', function() {
+    const selectedTime = $(this).val();
+    $('input[name="delivery_time"]').val(selectedTime);
+    $('input[name="billing_delivery_time"]').val(selectedTime);
+    console.log('SCL: Delivery time updated ->', selectedTime);
+});
+
+// تحديث عند كل update_checkout
+$(document.body).on('update_checkout', function() {
+    const deliveryDate = $('#scl_delivery_date').val();
+    const deliveryTime = $('#scl_delivery_time').val();
+    
+    if (deliveryDate) {
+        $('input[name="delivery_date"]').val(deliveryDate);
+        $('input[name="billing_delivery_date"]').val(deliveryDate);
+    }
+    
+    if (deliveryTime) {
+        $('input[name="delivery_time"]').val(deliveryTime);
+        $('input[name="billing_delivery_time"]').val(deliveryTime);
+    }
+    
+    console.log('SCL: Update checkout - Date:', deliveryDate, 'Time:', deliveryTime);
+});
+
+
+
     // ✅ ملء الحقول المخفية قبل إرسال الطلب
 $(document.body).on('checkout_place_order', function() {
     console.log('SCL: Place order triggered');
@@ -988,18 +1042,19 @@ $(document.body).on('checkout_place_order', function() {
         return false;
     }
     
-    // ✅ إنشاء hidden fields وإرسال البيانات
-    if (!$('input[name="delivery_date"]').length) {
-        $('<input>').attr({ type: 'hidden', name: 'delivery_date' }).appendTo('form.checkout');
-    }
-    if (!$('input[name="delivery_time"]').length) {
-        $('<input>').attr({ type: 'hidden', name: 'delivery_time' }).appendTo('form.checkout');
-    }
-    
+
     $('input[name="delivery_date"]').val(deliveryDate);
     $('input[name="delivery_time"]').val(deliveryTime);
+    $('input[name="billing_delivery_date"]').val(deliveryDate);
+    $('input[name="billing_delivery_time"]').val(deliveryTime);
     
-    console.log('SCL: Delivery data set ->', { deliveryDate, deliveryTime });
+    console.log('SCL: Final values ->', {
+        delivery_date: $('input[name="delivery_date"]').val(),
+        delivery_time: $('input[name="delivery_time"]').val(),
+        billing_delivery_date: $('input[name="billing_delivery_date"]').val(),
+        billing_delivery_time: $('input[name="billing_delivery_time"]').val()
+    });
+
     console.log('SCL: All validations passed ✅');
     
     return true;
