@@ -2,22 +2,49 @@
 /**
  * Plugin Name: Simple Checkout Location Selector
  * Description: Professional address management with location selection for WooCommerce
- * Version: 3.0.6
+ * Version: 3.1.2
  * Author: Abdulrahman Roston
+ * Author URI: https://github.com/abdulrahmanroston
+ * Plugin URI: https://github.com/abdulrahmanroston/address_manager_plugin
+ * Requires PHP: 7.4
+ * Requires at least: 5.8
  * Text Domain: simple-checkout-location
+ * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'SCL_VERSION', '3.1.1' );
+define( 'SCL_VERSION', '3.1.2' );
 define( 'SCL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SCL_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
-// Include required files
+// ==================== Plugin Update Checker ====================
+
+/**
+ * Setup automatic updates from GitHub commits
+ */
+if ( file_exists( SCL_PLUGIN_DIR . 'includes/plugin-update-checker-master/plugin-update-checker.php' ) ) {
+    require SCL_PLUGIN_DIR . 'includes/plugin-update-checker-master/plugin-update-checker.php';
+    
+    use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+    
+    $sclUpdateChecker = PucFactory::buildUpdateChecker(
+        'https://github.com/abdulrahmanroston/address_manager_plugin/',
+        __FILE__,
+        'simple-checkout-location'
+    );
+    
+    // Monitor the main branch for updates directly from commits
+    $sclUpdateChecker->setBranch( 'main' );
+}
+
+// ==================== Include Required Files ====================
+
 require_once SCL_PLUGIN_DIR . 'includes/class-address-repository.php';
-require_once SCL_PLUGIN_DIR . 'includes/class-zones-repository.php';  // ✅ قبل كل شيء
+require_once SCL_PLUGIN_DIR . 'includes/class-zones-repository.php';
 require_once SCL_PLUGIN_DIR . 'includes/class-address-manager.php';
 require_once SCL_PLUGIN_DIR . 'includes/class-address-service.php';
 require_once SCL_PLUGIN_DIR . 'includes/class-address-rest-controller.php';
