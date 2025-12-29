@@ -23,13 +23,13 @@ define( 'SCL_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
 // ==================== Plugin Update Checker ====================
 
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
 /**
  * Setup automatic updates from GitHub commits
  */
 if ( file_exists( SCL_PLUGIN_DIR . 'includes/plugin-update-checker-master/plugin-update-checker.php' ) ) {
     require SCL_PLUGIN_DIR . 'includes/plugin-update-checker-master/plugin-update-checker.php';
-    
-    use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
     
     $sclUpdateChecker = PucFactory::buildUpdateChecker(
         'https://github.com/abdulrahmanroston/address_manager_plugin/',
