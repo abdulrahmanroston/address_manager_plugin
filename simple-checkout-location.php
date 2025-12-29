@@ -2,9 +2,9 @@
 /**
  * Plugin Name: Simple Checkout Location Selector
  * Description: Professional address management with location selection for WooCommerce
- * Version: 3.1.2
+ * Version: 4.0.0
  * Author: Abdulrahman Roston
- * Author URI: https://github.com/abdulrahmanroston
+ * Author URI: https://abdulrahmanroston.com
  * Plugin URI: https://github.com/abdulrahmanroston/address_manager_plugin
  * Requires PHP: 7.4
  * Requires at least: 5.8
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
 
-define( 'SCL_VERSION', '3.1.2' );
+define( 'SCL_VERSION', '4.0.0' );
 define( 'SCL_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SCL_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
